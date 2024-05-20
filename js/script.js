@@ -113,6 +113,10 @@ function displayModal(employee) {
                     <p class="modal-text">Birthday: ${dobFormatted}</p>
                 </div>
             </div>
+            <div class="modal-btn-container">
+                <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
+                <button type="button" id="modal-next" class="modal-next btn">Next</button>
+            </div>
         </div>
     `;
     document.body.insertAdjacentHTML(`beforeend`, modalHTML);
@@ -161,5 +165,33 @@ document.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeModal();
+    }
+});
+
+/**
+ * Handles navigation between employee modals.
+ * Closes the current modal and displays the modal for the previous or next employee,
+ * if available, based on the clicked button (#modal-prev or #modal-next).
+ */
+document.addEventListener('click', (e) => {
+    const btnContainer = e.target.closest('.modal-btn-container');
+    if (!btnContainer) return;
+
+    const displayedEmployeeElement = document.querySelector('.modal-name');
+    if (!displayedEmployeeElement) return;
+
+    const displayedEmployee = displayedEmployeeElement.textContent;
+    const currentIndex = employees.findIndex(employee => `${employee.name.first} ${employee.name.last}` === displayedEmployee);
+    
+    if (e.target.matches('#modal-prev')) {
+        closeModal();
+        if (currentIndex > 0) {
+            displayModal(employees[currentIndex - 1]);
+        }
+    } else if (e.target.matches('#modal-next')) {
+        closeModal();
+        if (currentIndex < employees.length - 1) {
+            displayModal(employees[currentIndex + 1]);
+        }
     }
 });
