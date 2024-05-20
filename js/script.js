@@ -2,6 +2,7 @@ let employees = [];
 const employeeURL = `https://randomuser.me/api/?results=12&inc=picture,name,email,location,dob,cell,&nat=us`;
 const gallery = document.getElementById(`gallery`);
 const modalContainer = document.querySelector(`.modal-container`);
+const searchContainer = document.querySelector(`.search-container`);
 
 /**
  * Fetches employee data from the API.
@@ -52,6 +53,40 @@ function displayEmployees(employees) {
 }
 
 getEmployees(employeeURL);
+
+/**
+ * Generates and inserts the HTML for the search bar into the search container.
+ */
+function displaySearch() {
+    const searchHTML = `
+        <form action="#" method="get">
+            <input type="search" id="search-input" class="search-input" placeholder="Search...">
+            <input type="submit" value="&#x1F50D;" id="search-submit" class="search-submit">
+        </form>
+    `;
+    searchContainer.insertAdjacentHTML(`beforeend`, searchHTML);
+}
+
+displaySearch();
+
+/**
+ * Adds a keyup event listener to the search input field.
+ * Filters the displayed employee cards by name based on the user's search input.
+ */
+const searchInput = document.getElementById(`search-input`);
+searchInput.addEventListener(`keyup`, (e)=> {
+    const userInput = e.target.value.toLowerCase();
+    const employeeCards = document.querySelectorAll(`.card`);
+    employeeCards.forEach((card) => {
+        const nameElement = card.querySelector(`.card-name`);
+        const employeeName = nameElement.textContent.toLocaleLowerCase();
+        if (employeeName.includes(userInput)) {
+            card.style.display = `flex`;
+        } else {
+            card.style.display = `none`;
+        }
+    })
+ });
 
 /**
  * Creates and displays a modal with detailed employee information.
