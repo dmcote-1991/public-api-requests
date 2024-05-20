@@ -160,6 +160,16 @@ document.addEventListener('click', (e) => {
 });
 
 /**
+ * Closes the modal when the user clicks outside the modal.
+ */
+window.addEventListener('click', (e) => {
+    const modalContainer = document.querySelector('.modal-container');
+    if (e.target === modalContainer) {
+        closeModal();
+    }
+});
+
+/**
  * Closes the modal when the Escape key is pressed.
  */
 document.addEventListener('keydown', (e) => {
