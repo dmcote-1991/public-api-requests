@@ -1,4 +1,5 @@
 let employees = [];
+let filteredEmployees = [];
 const employeeURL = `https://randomuser.me/api/?results=12&inc=picture,name,email,location,dob,cell,&nat=us`;
 const gallery = document.getElementById(`gallery`);
 const modalContainer = document.querySelector(`.modal-container`);
@@ -19,6 +20,7 @@ async function getEmployees(url) {
         if(!response.ok) throw new Error(`Something went wrong`);
         const data = await response.json();
         employees = data.results;
+        filteredEmployees = employees;
         displayEmployees(employees);
         return employees;
     } catch (error) {
@@ -33,6 +35,7 @@ async function getEmployees(url) {
  * @param {Array} employees - Array of employee objects to display
  */
 function displayEmployees(employees) {
+    gallery.innerHTML = ``;
     const employeesHTML = employees
         .map(
             (employee) => `
@@ -74,27 +77,33 @@ displaySearch();
  * Filters the displayed employee cards by name based on the user's search input.
  */
 const searchInput = document.getElementById(`search-input`);
-searchInput.addEventListener(`keyup`, (e)=> {
+searchInput.addEventListener(`keyup`, (e) => {
     const userInput = e.target.value.toLowerCase();
-    const employeeCards = document.querySelectorAll(`.card`);
-    employeeCards.forEach((card) => {
-        const nameElement = card.querySelector(`.card-name`);
-        const employeeName = nameElement.textContent.toLocaleLowerCase();
-        if (employeeName.includes(userInput)) {
-            card.style.display = `flex`;
-        } else {
-            card.style.display = `none`;
-        }
-    })
- });
+    filteredEmployees = filterEmployees(userInput);
+    displayEmployees(filteredEmployees);
+});
+
+/**
+ * Filters employees based on user input.
+ *
+ * @param {string} userInput - The user input to filter employees by
+ * @returns {Array} - The filtered array of employee objects
+ */
+function filterEmployees(userInput) {
+    return employees.filter(employee => {
+        const employeeName = `${employee.name.first} ${employee.name.last}`.toLowerCase();
+        return employeeName.includes(userInput);
+    });
+}
 
 /**
  * Creates and displays a modal with detailed employee information.
  * The modal includes the employee's picture, name, email, location, cell, and birthdate.
  *
  * @param {Object} employee - The employee object to display in the modal
+ *  * @param {Array} employeeList - The list of employees for navigation (either full or filtered)
  */
-function displayModal(employee) {
+function displayModal(employee, employeeList) {
     const location = `${employee.location.street.number} ${employee.location.street.name}, ${employee.location.city}, ${employee.location.state} ${employee.location.postcode}`;
     const dob = new Date(employee.dob.date);
     const dobFormatted = `${dob.getMonth() + 1}/${dob.getDate()}/${dob.getFullYear()}`;
@@ -120,6 +129,8 @@ function displayModal(employee) {
         </div>
     `;
     document.body.insertAdjacentHTML(`beforeend`, modalHTML);
+    document.getElementById('modal-prev').addEventListener('click', () => navigateModal(employeeList, employee, -1));
+    document.getElementById('modal-next').addEventListener('click', () => navigateModal(employeeList, employee, 1));
 }
 
 /**
@@ -132,21 +143,38 @@ gallery.addEventListener(`click`, (e) => {
     if (clickedCard) {
         const emailElement = clickedCard.querySelector(`.card-text`);
         const employeeEmail = emailElement.textContent;
-        const employee = employees.find(employee => employee.email === employeeEmail);
+        const employee = filteredEmployees.find(employee => employee.email === employeeEmail);
         if (employee) {
-            displayModal(employee);
+            displayModal(employee, filteredEmployees);
         }
     }
 });
 
 /**
- * Removes the modal from the DOM.
+ * Handles navigation between employee modals.
+ * Closes the current modal and displays the modal for the previous or next employee,
+ *      if available, based on the clicked button (#modal-prev or #modal-next).
+ *
+ * @param {Array} employeeList - The list of employees for navigation (either full or filtered)
+ * @param {Object} currentEmployee - The currently displayed employee
+ * @param {number} direction - The direction to navigate (-1 for prev, 1 for next)
+ */
+function navigateModal(employeeList, currentEmployee, direction) {
+    const currentIndex = employeeList.indexOf(currentEmployee);
+    let newIndex = currentIndex + direction;
+    if (newIndex < 0) newIndex = employeeList.length - 1;
+    if (newIndex >= employeeList.length) newIndex = 0;
+
+    closeModal();
+    displayModal(employeeList[newIndex], employeeList);
+}
+
+/**
+ * Closes the currently open modal.
  */
 function closeModal() {
     const modalContainer = document.querySelector('.modal-container');
-    if (modalContainer) {
-        modalContainer.remove();
-    }
+    if (modalContainer) modalContainer.remove();
 }
 
 /**
@@ -175,33 +203,5 @@ window.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         closeModal();
-    }
-});
-
-/**
- * Handles navigation between employee modals.
- * Closes the current modal and displays the modal for the previous or next employee,
- * if available, based on the clicked button (#modal-prev or #modal-next).
- */
-document.addEventListener('click', (e) => {
-    const btnContainer = e.target.closest('.modal-btn-container');
-    if (!btnContainer) return;
-
-    const displayedEmployeeElement = document.querySelector('.modal-name');
-    if (!displayedEmployeeElement) return;
-
-    const displayedEmployee = displayedEmployeeElement.textContent;
-    const currentIndex = employees.findIndex(employee => `${employee.name.first} ${employee.name.last}` === displayedEmployee);
-    
-    if (e.target.matches('#modal-prev')) {
-        closeModal();
-        if (currentIndex > 0) {
-            displayModal(employees[currentIndex - 1]);
-        }
-    } else if (e.target.matches('#modal-next')) {
-        closeModal();
-        if (currentIndex < employees.length - 1) {
-            displayModal(employees[currentIndex + 1]);
-        }
     }
 });
