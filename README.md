@@ -14,7 +14,7 @@ This project is a dynamic employee directory for a fictional startup company. It
 
 - **HTML5**: For structuring the content.
 - **CSS3**: For styling the user interface.
-- **JavaScript (ES6)**: For fetching data, manipulating the DOM, and adding interactive features.
+- **TypeScript**: For fetching data, manipulating the DOM, and adding interactive features.
 - **Fetch API**: For retrieving employee data from the [Random User API](https://randomuser.me/).
 
 ## Getting Started
@@ -33,6 +33,10 @@ To run this project, you'll need a modern web browser that supports ES6 JavaScri
    ```bash
    cd public-api-requests
 
+3. Compile the TypeScript files:
+   ```bash
+   tsc
+
 3. Open `index.html` in your web browser
 
 ## Directory Structure
@@ -42,9 +46,12 @@ public-api-requests/
 ├── css/
 │   ├── normalize.css
 │   └── styles.css
-├── js/
+├── dist/  # Compiled JavaScript files
 │   └── script.js
+├── ts/
+│   └── script.ts
 ├── index.html
+├── tsconfig.json
 └── README.md
 ```
 
@@ -59,7 +66,7 @@ public-api-requests/
 
 ## Code Overview
 
-### `script.js`
+### `script.ts`
 
 - **`getEmployees(url)`**: Fetches employee data from the specified API URL, handles errors, and updates the displayed list of employees.
 - **`displayEmployees(employees)`**: Renders the employee cards in the gallery based on the provided data.

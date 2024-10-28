@@ -1,5 +1,34 @@
+interface Name {
+    first: string;
+    last: string;
+};
+
+interface EmpLocation {
+    street: {
+        number: number;
+        name: string;
+    };
+    city: string;
+    state: string;
+    postcode: string;
+};
+
 class Employee {
-    constructor(picture, name, email, location, dob, cell) {
+    picture: { large: string };
+    name: Name;
+    email: string;
+    location: EmpLocation;
+    dob: Date;
+    cell: string;
+
+    constructor(
+        picture: { large: string }, 
+        name: Name, 
+        email: string, 
+        location: EmpLocation, 
+        dob: string, 
+        cell: string
+    ) {
         this.picture = picture;
         this.name = name;
         this.email = email;
@@ -8,34 +37,47 @@ class Employee {
         this.cell = cell;
     }
 
-    getFormattedDOB() {
+    getFormattedDOB(): string {
         return `${this.dob.getMonth() + 1}/${this.dob.getDate()}/${this.dob.getFullYear()}`;
     }
 
-    getLocationString() {
+    getLocationString(): string {
         return `${this.location.street.number} ${this.location.street.name}, ${this.location.city}, ${this.location.state} ${this.location.postcode}`;
     }
 
-    getFullName() {
+    getFullName(): string {
         return `${this.name.first} ${this.name.last}`;
     }
 }
 
+interface ApiEmployee {
+    picture: { large: string };
+    name: Name;
+    email: string; 
+    location: EmpLocation;
+    dob: { date: string };
+    cell: string;
+}
+
 class EmployeeManager {
-    constructor(url) {
+    private url: string;
+    employees: Employee[];
+    filteredEmployees: Employee[];
+
+    constructor(url: string) {
         this.url = url;
         this.employees = [];
         this.filteredEmployees = [];
     }
 
-    async fetchEmployees() {
+    async fetchEmployees(): Promise<void> {
         try {
             const response = await fetch(this.url);
             if (!response.ok) throw new Error('Something went wrong');
 
             const data = await response.json();
 
-            this.employees = data.results.map(emp => new Employee(
+            this.employees = data.results.map((emp: ApiEmployee) => new Employee(
                 emp.picture,
                 emp.name,
                 emp.email,
@@ -50,8 +92,9 @@ class EmployeeManager {
         }
     }
 
-    displayEmployees(employeeList) {
+    displayEmployees(employeeList: Employee[]): void {
         const gallery = document.getElementById('gallery');
+        if (!gallery) return;
         gallery.innerHTML = '';
         const employeesHTML = employeeList.map(employee => `
             <div class="card">
@@ -68,7 +111,7 @@ class EmployeeManager {
         gallery.insertAdjacentHTML('beforeend', employeesHTML);
     }
 
-    filterEmployees(searchTerm) {
+    filterEmployees(searchTerm: string): void {
         this.filteredEmployees = this.employees.filter(employee => 
             employee.getFullName().toLowerCase().includes(searchTerm.toLowerCase())
         );
@@ -77,11 +120,9 @@ class EmployeeManager {
 }
 
 class Modal {
-    constructor() {
-        this.modalContainer = null;
-    }
+    private modalContainer: HTMLElement | null = null;
 
-    displayModal(employee, employeeList) {
+    displayModal(employee: Employee, employeeList: Employee[]): void {
         const location = employee.getLocationString();
         const dobFormatted = employee.getFormattedDOB();
         const modalHTML = `
@@ -107,12 +148,12 @@ class Modal {
         `;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         this.modalContainer = document.querySelector('.modal-container');
-        document.getElementById('modal-prev').addEventListener('click', () => this.navigateModal(employeeList, employee, -1));
-        document.getElementById('modal-next').addEventListener('click', () => this.navigateModal(employeeList, employee, +1));
-        document.getElementById('modal-close-btn').addEventListener('click', () => this.closeModal());
+        document.getElementById('modal-prev')?.addEventListener('click', () => this.navigateModal(employeeList, employee, -1));
+        document.getElementById('modal-next')?.addEventListener('click', () => this.navigateModal(employeeList, employee, +1));
+        document.getElementById('modal-close-btn')?.addEventListener('click', () => this.closeModal());
     }
 
-    navigateModal(employeeList, currentEmployee, direction) {
+    navigateModal(employeeList: Employee[], currentEmployee: Employee, direction: number): void {
         const currentIndex = employeeList.indexOf(currentEmployee);
         let newIndex = currentIndex + direction;
 
@@ -128,7 +169,7 @@ class Modal {
         this.displayModal(employeeList[newIndex], employeeList);
     }
 
-    closeModal() {
+    closeModal(): void {
         if (this.modalContainer) {
             this.modalContainer.remove();
             this.modalContainer = null;
@@ -137,22 +178,25 @@ class Modal {
 }
 
 class Search {
-    constructor(employeeManager) {
+    private employeeManager: EmployeeManager;
+
+    constructor(employeeManager: EmployeeManager) {
         this.employeeManager = employeeManager;
     }
 
-    init() {
+    init(): void {
         this.displaySearch();
         const searchInput = document.getElementById('search-input');
-        searchInput.addEventListener('keyup', (e) => {
+        searchInput?.addEventListener('keyup', (e) => {
             e.preventDefault();
-            const userInput = e.target.value;
+            const userInput = (e.target as HTMLInputElement).value;
             this.employeeManager.filterEmployees(userInput);
         });
     }
 
-    displaySearch() {
+    displaySearch(): void {
         const searchContainer = document.querySelector('.search-container');
+        if (!searchContainer) return;
         const searchHTML = `
             <form action="#" method="get">
                 <input type="search" id="search-input" class="search-input" placeholder="Search...">
@@ -164,7 +208,7 @@ class Search {
 }
 
 // Initialize the app
-const employeeURL = `https://randomuser.me/api/?results=12&inc=picture,name,email,location,dob,cell,&nat=us`;
+const employeeURL: string = `https://randomuser.me/api/?results=12&inc=picture,name,email,location,dob,cell,&nat=us`;
 const employeeManager = new EmployeeManager(employeeURL);
 const modal = new Modal();
 const search = new Search(employeeManager);
@@ -174,11 +218,11 @@ employeeManager.fetchEmployees();
 search.init();
 
 // Event listener for displaying modal
-document.getElementById('gallery').addEventListener('click', (e) => {
-    const clickedCard = e.target.closest('.card');
+document.getElementById('gallery')?.addEventListener('click', (e) => {
+    const clickedCard = (e.target as HTMLElement).closest('.card');
     if (clickedCard) {
-        const emailElement = clickedCard.querySelector('.card-text');
-        const employeeEmail = emailElement.textContent;
+        const emailElement = clickedCard.querySelector('.card-text') as HTMLElement;
+        const employeeEmail = emailElement.textContent || '';
         const employee = employeeManager.filteredEmployees.find(emp => emp.email === employeeEmail);
         if (employee) {
             modal.displayModal(employee, employeeManager.filteredEmployees);
@@ -188,7 +232,7 @@ document.getElementById('gallery').addEventListener('click', (e) => {
 
 // Close the modal when clicking outside or pressing escape
 window.addEventListener('click', (e) => {
-    if (e.target.classList.contains('modal-container')) {
+    if ((e.target as HTMLElement).classList.contains('modal-container')) {
         modal.closeModal();
     }
 });

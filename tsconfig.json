@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    /* Basic Compiler Options */
+    "target": "es2016",                        /* Set the JavaScript language version. */
+    "module": "esnext",                        /* Specify what module code is generated. */
+    "esModuleInterop": true,                   /* Emit additional JavaScript for CommonJS module support. */
+    "forceConsistentCasingInFileNames": true,  /* Ensure correct casing in imports. */
+    "strict": true,                            /* Enable all strict type-checking options. */
+    "skipLibCheck": true,                      /* Skip type checking of all .d.ts files. */
+
+    /* Directory Structure Options */
+    "rootDir": "./ts",                         /* Specify the root directory of input files. */
+    "outDir": "./dist",                        /* Redirect output structure to the 'dist' directory. */
+    
+    /* Optional: Source Maps for Debugging */
+    // "sourceMap": true                          /* Generates corresponding '.map' files for debugging. */
+  },
+  "include": ["./ts/**/*.ts"],                 /* Include all .ts files in the 'ts' folder. */
+  "exclude": ["node_modules"]                  /* Exclude node_modules from compilation. */
+}
