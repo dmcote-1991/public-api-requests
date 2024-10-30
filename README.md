@@ -47,10 +47,19 @@ public-api-requests/
 │   ├── normalize.css
 │   └── styles.css
 ├── dist/  # Compiled JavaScript files
-│   └── script.js
+│   ├── App.js
+│   ├── Employee.js
+│   ├── EmployeeManager.js
+│   ├── Modal.js
+│   └── Search.js
 ├── ts/
-│   └── script.ts
+│   ├── App.ts
+│   ├── Employee.ts
+│   ├── EmployeeManager.ts
+│   ├── Modal.ts
+│   └── Search.ts
 ├── index.html
+├── .gitignore
 ├── tsconfig.json
 └── README.md
 ```
