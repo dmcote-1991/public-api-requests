@@ -59,21 +59,22 @@ export class EmployeeManager {
     displayEmployees(employeeList: Employee[]): void {
         const gallery = document.getElementById('gallery'); // Get the gallery container
         if (!gallery) return; // Exit if gallery not found
+
         gallery.innerHTML = ''; // Clear existing content
 
         // Generate HTML for each employee and insert it into the gallery
-        const employeesHTML = employeeList.map(employee => `
-            <div class="card">
+        const employeesHTML = employeeList.map(employee =>
+            `<div class="card" tabindex="0" role="button" aria-label="Employee: ${employee.getFullName()}">
                 <div class="card-img-container">
-                    <img class="card-img" src="${employee.picture.large}" alt="profile picture">
+                    <img class="card-img" src="${employee.picture.large}" alt="profile picture of ${employee.getFullName()}">
                 </div>
                 <div class="card-info-container">
                     <h3 id="name" class="card-name cap">${employee.getFullName()}</h3>
                     <p class="card-text">${employee.email}</p>
                     <p class="card-text cap">${employee.location.city}, ${employee.location.state}</p>
                 </div>
-            </div>
-        `).join('');
+            </div>`
+        ).join('');
 
         // Add generated HTML to the gallery
         gallery.insertAdjacentHTML('beforeend', employeesHTML); 

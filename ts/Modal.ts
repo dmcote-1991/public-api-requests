@@ -4,7 +4,7 @@ import { Employee } from './Employee.js';
 // The Modal class handles displaying and navigating through employee details in a modal window
 export class Modal {
     // Container element for the modal, initially null
-    private modalContainer: HTMLElement | null = null;
+    public modalContainer: HTMLElement | null = null;
 
     /**
      * Displays the modal with the employee's details
@@ -17,13 +17,15 @@ export class Modal {
         const dobFormatted = employee.getFormattedDOB();
 
         // Create the modal HTML structure with employee details
-        const modalHTML = `
-            <div class="modal-container">
+        const modalHTML = 
+            `<div class="modal-container" role="dialog" aria-labelledby="modal-title" aria-describedby="modal-info">
                 <div class="modal">
-                    <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-                    <div class="modal-info-container">
-                        <img class="modal-img" src="${employee.picture.large}" alt="profile picture">
-                        <h3 id="name" class="modal-name cap">${employee.getFullName()}</h3>
+                    <button type="button" id="modal-close-btn" class="modal-close-btn" aria-label="Close Modal">
+                        <strong>X</strong>
+                    </button>
+                    <div id="modal-info class="modal-info-container">
+                        <img class="modal-img" src="${employee.picture.large}" alt="profile picture of ${employee.getFullName()}">
+                        <h3 id="modal-title" class="modal-name cap">${employee.getFullName()}</h3>
                         <p class="modal-text">${employee.email}</p>
                         <p class="modal-text cap">${employee.location.city}, ${employee.location.state}</p>
                         <hr>
@@ -33,11 +35,10 @@ export class Modal {
                     </div>
                 </div>
                 <div class="modal-btn-container">
-                    <button type="button" id="modal-prev" class="modal-prev btn">Prev</button>
-                    <button type="button" id="modal-next" class="modal-next btn">Next</button>
+                    <button type="button" id="modal-prev" class="modal-prev btn" aria-label="Previous Employee">Prev</button>
+                    <button type="button" id="modal-next" class="modal-next btn" aria-label="Next Employee">Next</button>
                 </div>
-            </div>    
-        `;
+            </div>`;
 
         // Insert the modal HTML into the document body
         document.body.insertAdjacentHTML('beforeend', modalHTML);
