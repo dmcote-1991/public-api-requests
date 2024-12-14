@@ -10,12 +10,12 @@
     "lib": ["dom", "esnext"],
     
     /* Directory Structure Options */
-    "rootDir": "./ts",                         /* Specify the root directory of input files. */
+    "rootDir": "./src",                        /* Specify the root directory of input files. */
     "outDir": "./dist",                        /* Redirect output structure to the 'dist' directory. */
     
     /* Optional: Source Maps for Debugging */
-    // "sourceMap": true                          /* Generates corresponding '.map' files for debugging. */
+    // "sourceMap": true                       /* Generates corresponding '.map' files for debugging. */
   },
-  "include": ["./ts/**/*.ts"],                 /* Include all .ts files in the 'ts' folder. */
+  "include": ["./src/**/*.ts"],                /* Include all .ts files in the 'ts' folder. */
   "exclude": ["node_modules"]                  /* Exclude node_modules from compilation. */
 }
